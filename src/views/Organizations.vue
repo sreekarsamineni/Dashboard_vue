@@ -8,13 +8,7 @@
                 
                 <!-- Dialogbox_org_form -->
                 
-                <div class="mt-3">
-                    <!-- Submitted Names:
-                    <div v-if="submittedNames.length === 0"></div>
-                    <ul v-else class="mb-0 pl-3">
-                        <li v-for="name in submittedNames" >{{ name }}</li>
-                    </ul> -->
-                </div>
+                <div class="mt-3"></div>
 
                 <b-modal
                     id="add-org"
@@ -75,92 +69,7 @@
                             <button class="btn btn-primary" type="submit" @click="validate">Add Oranization</button>
                         </div>
                     </template>
-                        
-                    <!-- <form ref="form" @submit.stop.prevent="handleSubmit">
-                        <b-form-group
-                            label="Organization Name"
-                            label-for="name-input"
-                            invalid-feedback="Name is required"
-                            :state="nameState"
-                        >
-                        <b-form-input
-                            id="name-input"
-                            v-model="name"
-                            :state="nameState"
-                            required
-                        ></b-form-input>
-                        </b-form-group>
-
-                        <b-form-group
-                            label="Email"
-                            label-for="email-input"
-                            invalid-feedback="Email is required"
-                            :state="emailState"
-                        >
-                        <b-form-input
-                            id="email-input"
-                            v-model="email"
-                            :state="emailState"
-                            required
-                        ></b-form-input>
-                        </b-form-group>
-
-                        <b-form-group
-                            label="Contact No"
-                            label-for="contact-input"
-                            invalid-feedback="Number is required"
-                            :state="contactState"
-                        >
-                        <b-form-input
-                            id="contact-input"
-                            v-model="contact"
-                            :state="contactState"
-                            required
-                        ></b-form-input>
-                        </b-form-group>
-
-                        <b-form-group
-                            label="Admin Name"
-                            label-for="aname-input"
-                            invalid-feedback="Admin Name is required"
-                            :state="anameState"
-                        >
-                        <b-form-input
-                            id="aname-input"
-                            v-model="aname"
-                            :state="anameState"
-                            required
-                        ></b-form-input>
-                        </b-form-group>
-
-                        <b-form-group
-                            label="Admin Email"
-                            label-for="aemail-input"
-                            invalid-feedback="Admin Email is required"
-                            :state="aemailState"
-                        >
-                        <b-form-input
-                            id="aemail-input"
-                            v-model="aemail"
-                            :state="aemailState"
-                            required
-                        ></b-form-input>
-                        </b-form-group>
-
-                        <b-form-group
-                            label="Admin Contact No"
-                            label-for="acontact-input"
-                            invalid-feedback="Admin Contact No is required"
-                            :state="acontactState"
-                        >
-                        <b-form-input
-                            id="acontact-input"
-                            v-model="acontact"
-                            :state="acontactState"
-                            required
-                        ></b-form-input>
-                        </b-form-group>
-                    </form> -->
+                    
                 </b-modal>
 
             </div>
@@ -411,7 +320,7 @@ export default {
                 }
 			},
 
-
+            //clear form
             resetModal() {
                 this.name = '';
                 this.email = '';
@@ -441,6 +350,7 @@ export default {
 
         },
 
+        //add cards
         addOrg(){
             
             if(this.name.length === 0) return;
@@ -453,9 +363,6 @@ export default {
                 this.totalRows = this.items.length;
                 this.$refs.modal.hide();
            }
-        //         this.$nextTick(() => {
-        //    this.$bvModal.hide('add-org')
-        //         })
                 // this.name= '',
                 // this.email= '',
                 // this.contact= '',
@@ -477,55 +384,7 @@ export default {
             }
             this.paginate(this.perPage, this.currentPage - 1);
         }
-
-
-
-
-    //   checkFormValidity() {
-    //     const valid = this.$refs.form.checkValidity()
-    //     this.nameState = valid
-    //     this.emailState = valid
-    //     this.contactState = valid
-    //     this.anameState = valid
-    //     this.aemailState = valid
-    //     this.acontactState = valid
-    //     return valid
-    //   },
-    //   resetModal() {
-    //     this.name = ''
-    //     this.nameState = null
-    //     this.email = ''
-    //     this.emailState = null
-    //     this.contact = ''
-    //     this.contactState = null
-    //     this.aname = ''
-    //     this.anameState = null
-    //     this.aemail = ''
-    //     this.aemailState = null
-    //     this.acontact = ''
-    //     this.acontactState = null
-
-    //   },
-    //   handleOk(bvModalEvent) {
-    //     // Prevent modal from closing
-    //     bvModalEvent.preventDefault()
-    //     // Trigger submit handler
-    //     this.handleSubmit()
-    //   },
-    //   handleSubmit() {
-    //     // Exit when the form isn't valid
-    //     if (!this.checkFormValidity()) {
-    //       return
-    //     }
-    //     // Push the name to submitted names
-    //     this.submittedNames.push(this.name)
-    //     // Hide the modal manually
-    //     this.$nextTick(() => {
-    //       this.$bvModal.hide('add-org')
-    //     })
-    //   }
     }
-
 
 }
 </script>
