@@ -23,6 +23,19 @@ import router from './routes/router';
 // plugin setup
 Vue.use(DashboardPlugin);
 
+////////////////////////////////////////////////////////
+//Toasts
+import Toast from "vue-toastification";
+// Import the CSS or use your own!
+import "vue-toastification/dist/index.css";
+
+const options = {
+    // You can set your default options here
+};
+
+Vue.use(Toast, options);
+////////////////////////////////////////////////////////
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

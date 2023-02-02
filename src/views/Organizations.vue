@@ -16,9 +16,6 @@
                     title="Add Organization"
                     @show="resetModal"
                     @hidden="resetModal"
-                    @ok="handleOk"
-                    ok-title="Add"
-                    cancel-title="Close"
                     size="lg"
                     
                 >
@@ -74,56 +71,123 @@
 
             </div>
 
-        <!-- Organization Cards -->
-        <div v-if="items.length">
-            <b-row>
-                <b-col cols="12" sm="4" class="my-1" :key="index" v-for="(item, index) in paginatedItems">
-                    <b-card
-                    class=" mt-4"
-                    >
-                    <b-card-title align='left' style="color:#7C8DA0" class="text-uppercase d-flex justify-content-between mt-1">
-                        {{item.oname}}
-                        <!-- Dropdown option -->
-                        <b-dropdown  variant="link" toggle-class="text-decoration-none" no-caret class="mt--3">
-                            <template #button-content>
-                                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-                            </template>
-                            <b-dropdown-item-button>View</b-dropdown-item-button>
-                            <b-dropdown-item-button>Edit</b-dropdown-item-button>
-                            <b-dropdown-item-button @click="deleteCard(item.id)">Delete</b-dropdown-item-button>
-                        </b-dropdown>
-                    </b-card-title>
-                        <h3 class="card-text text-dark fw-bold">{{item.title}}</h3>
-                        <small class="card-text" >{{item.body}}</small>
-                        <footer class="mt-4">
-                            <small><cite title="Source Title" class="text-success">4.56%</cite> Since last month </small>
-                        </footer>
-                    </b-card>
-                </b-col>
-            </b-row>
-        </div>
+            <!-- Edit Form -->
+            <b-modal
+                    id="edit-org"
+                    ref="modal"
+                    title="Edit Organization"
+                    @show="resetModal"
+                    @hidden="resetModal"
+                    size="lg"
+                    
+                >
+                    <form @submit.prevent="validate">
+                        <div class="form-group">
+                            <input type="text" class="form-control" v-bind:class="{ 'is-invalid': nameError }" id="name" placeholder="Organization name" v-model="name">
+                            <div class="invalid-feedback" id="feedback-1" v-if="errors[0]">
+                                {{ errors[0].message }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" v-bind:class="{ 'is-invalid': emailError }" id="email" placeholder="Email" v-model="email">
+                            <div class="invalid-feedback" id="feedback-2" v-if="errors[1]">
+                                {{ errors[1].message }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" v-bind:class="{ 'is-invalid': contactError }" id="contact" placeholder="Contact No" v-model="contact">
+                            <div class="invalid-feedback" id="feedback-3" v-if="errors[2]">
+                                {{ errors[2].message }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" v-bind:class="{ 'is-invalid': anameError }" id="aname" placeholder="Admin name" v-model="aname">
+                            <div class="invalid-feedback" id="feedback-4" v-if="errors[3]">
+                                {{ errors[3].message }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" v-bind:class="{ 'is-invalid': aemailError }" id="aemail" placeholder="Admin email" v-model="aemail">
+                            <div class="invalid-feedback" id="feedback-5" v-if="errors[4]">
+                                {{ errors[4].message }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" v-bind:class="{ 'is-invalid': acontactError }" id="acontact" placeholder="Admin Contact No" v-model="acontact">
+                            <div class="invalid-feedback" id="feedback-6" v-if="errors[5]">
+                                {{ errors[5].message }}
+                            </div>
+                        </div>
+                        <!-- <button class="btn btn-primary" type="submit">Validate</button> -->
+                    </form>
+                    <template v-slot:modal-footer="{}">
+                        <div @click="$refs.modal.hide()">
+                            <button class="btn btn-primary" @click="resetModal">Close</button>
+                        </div>
+                        <div @click="updateOrg">
+                            <button class="btn btn-primary" type="submit" @click="validate">Update</button>
+                        </div>
+                    </template>
+                    
+                </b-modal>
+            
 
-        <div class="text-center mt-8 mb-8" v-else> 
-                <b-icon icon="search" font-scale="10px"></b-icon>
-                <div class="text-muted text-center mt-2">NO ORGANIZATIONS FOUND</div>
-            </div>   
+        <!-- Organization Cards -->
+                <div v-if="items.length">
+                    <b-row>
+                        <b-col cols="12" sm="4" class="my-1" :key="index" v-for="(item, index) in paginatedItems">
+                            <b-card
+                            class=" mt-4"
+                            >
+                            <b-card-title align='left' style="color:#7C8DA0" class="text-uppercase d-flex justify-content-between mt-1">
+                                {{item.oname}}
+                                <!-- Dropdown option -->
+                                <b-dropdown  variant="link" toggle-class="text-decoration-none" no-caret class="mt--3">
+                                    <template #button-content>
+                                        <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                    </template>
+                                    <b-dropdown-item-button @click="viewItem(item.oname)">View</b-dropdown-item-button>
+                                    <div @click="editOrg(item.id)">
+                                        <b-dropdown-item-button  v-b-modal.edit-org>Edit</b-dropdown-item-button>
+                                    </div>
+                                    <div variant="primary" @click="$bvToast.show('example-toast')">
+                                        <b-dropdown-item-button @click="deleteCard(item.id)">Delete</b-dropdown-item-button>
+                                    </div>
+                                </b-dropdown>
+                            </b-card-title>
+                                <h3 class="card-text text-dark fw-bold">{{item.title}}</h3>
+                                <small class="card-text" >{{item.body}}</small>
+                                <footer class="mt-4">
+                                    <small><cite title="Source Title" class="text-success">4.56%</cite> Since last month </small>
+                                </footer>
+                            </b-card>
+                        </b-col>
+                    </b-row>
+                </div>
+
+                <div class="text-center mt-8 mb-8" v-else> 
+                    <b-icon icon="search" font-scale="10px"></b-icon>
+                    <div class="text-muted text-center mt-2">NO ORGANIZATIONS FOUND</div>
+                </div>   
+
         <!-- Pagination -->
-        <div class="pagination-container">
-            <b-row  v-if="items.length > perPage">
-                <b-col class="my-3">
-                    <b-pagination
-                    @change="onPageChanged"
-                    :total-rows="totalRows"
-                    :per-page="perPage"
-                    v-model="currentPage"
-                    class="my-0"
-                    align="right"
-                    />
-                </b-col>
-            </b-row>
-        </div>
+                <div class="pagination-container">
+                    <b-row  v-if="items.length > perPage">
+                        <b-col class="my-3">
+                            <b-pagination
+                            @change="onPageChanged"
+                            :total-rows="totalRows"
+                            :per-page="perPage"
+                            v-model="currentPage"
+                            class="mb-7"
+                            align="right"
+                            />
+                        </b-col>
+                    </b-row>
+                </div>
         </b-container>
     </div>
+
 </template>
 
 <script>
@@ -214,7 +278,6 @@ export default {
         currentPage: 1,
         perPage: 6,
         totalRows: items.length
-
       }
     },
 
@@ -362,6 +425,22 @@ export default {
                 this.paginate(this.perPage, this.currentPage - 1);
                 this.totalRows = this.items.length;
                 this.$refs.modal.hide();
+
+                //Alerts
+                this.$toast.success("Added Successfully!", {
+                    position: "bottom-right",
+                    timeout: 3000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: false,
+                    icon: true,
+                    rtl: false
+                });
            }
                 // this.name= '',
                 // this.email= '',
@@ -372,6 +451,55 @@ export default {
                 // Close the modal
         },
 
+        //Edit cards
+        updateOrg(){
+
+            if(this.name.length === 0) return;
+
+           if( this.validate){
+            if(this.editedCard === null){
+            this.items.push({
+                    oname: this.name,
+                });
+                
+            }
+            else{
+                this.items[this.editedCard].oname = this.name
+                this.editedTask = null;
+                
+                //Alerts
+                this.$toast.success("Updated Successfully!", {
+                    position: "bottom-right",
+                    timeout: 3000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: false,
+                    icon: true,
+                    rtl: false
+                });
+
+            }
+            this.paginate(this.perPage, this.currentPage - 1);
+            this.totalRows = this.items.length;
+            this.$refs.modal.hide();
+           }
+            
+        },
+
+        //pre-populate the data
+        editOrg(id){
+            const index = this.items.findIndex(item => item.id === id);
+            this.name = this.items[index].oname
+            this.editedCard = index;
+
+        },
+
+        //delete cards
         deleteCard(id){
             // this.items = this.items.filter(item => item.id !== id)
             const index = this.items.findIndex(item => item.id === id)
@@ -383,9 +511,31 @@ export default {
                 this.currentPage -= 1;
             }
             this.paginate(this.perPage, this.currentPage - 1);
-        }
+
+            //Alerts
+            this.$toast.success("Deleted Successfully!", {
+                    position: "bottom-right",
+                    timeout: 3000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: false,
+                    icon: true,
+                    rtl: false
+                });
+        },
+
+        //Push the data through router
+        viewItem(name) {
+      this.$router.push({ name: 'view', params: { name } });
     }
 
+    }
+    
 }
 </script>
 
