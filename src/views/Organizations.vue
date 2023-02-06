@@ -56,6 +56,15 @@
                                 {{ errors[5].message }}
                             </div>
                         </div>
+                        <div class="form-group">
+                            <b-select class="form-control" v-bind:class="{ 'is-invalid': statusError }" id="status" v-model="status">
+                                <option value="" selected>Select status</option>
+                            <option v-for="(item, index) in statusOptions" :value="item.value" :key="index">{{ item.text }}</option>
+                            </b-select>
+                            <div class="invalid-feedback" v-if="errors[6]">
+                            {{ errors[6].message }}
+                            </div>
+                        </div>
                         <!-- <button class="btn btn-primary" type="submit">Validate</button> -->
                     </form>
                     <template v-slot:modal-footer="{}">
@@ -118,6 +127,15 @@
                                 {{ errors[5].message }}
                             </div>
                         </div>
+                        <div class="form-group">
+                            <b-select class="form-control" v-bind:class="{ 'is-invalid': statusError }" id="status" v-model="status">
+                                <option value="" selected>Select status</option>
+                            <option v-for="(item, index) in statusOptions" :value="item.value" :key="index">{{ item.text }}</option>
+                            </b-select>
+                            <div class="invalid-feedback" v-if="errors[6]">
+                            {{ errors[6].message }}
+                            </div>
+                        </div>
                         <!-- <button class="btn btn-primary" type="submit">Validate</button> -->
                     </form>
                     <template v-slot:modal-footer="{}">
@@ -133,7 +151,7 @@
             
 
         <!-- Organization Cards -->
-                <div v-if="items.length">
+                <div v-if="items.length" :class="{ 'custom-margin': cardLengthIsThree }">
                     <b-row>
                         <b-col cols="12" sm="4" class="my-1" :key="index" v-for="(item, index) in paginatedItems">
                             <b-card
@@ -146,7 +164,7 @@
                                     <template #button-content>
                                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                                     </template>
-                                    <b-dropdown-item-button @click="viewItem(item.oname)">View</b-dropdown-item-button>
+                                    <b-dropdown-item-button @click="viewItem(item.oname, item.body)">View</b-dropdown-item-button>
                                     <div @click="editOrg(item.id)">
                                         <b-dropdown-item-button  v-b-modal.edit-org>Edit</b-dropdown-item-button>
                                     </div>
@@ -270,6 +288,14 @@ export default {
         anameError: false,
         aemailError: false,
         acontactError: false,
+       status: '',
+        statusOptions: [
+        { value: 'basic', text: 'Basic' },
+        { value: 'corporate', text: 'Corparate' },
+        { value: 'partner', text: 'Partner' },
+        { value: 'sponsor', text: 'Sponsor' }
+        ],
+        statusError: false,
         errors: [],
 
         // Pagination
@@ -286,102 +312,90 @@ export default {
         
       },
     
-    computed: {},
+    computed: {
+        cardLengthIsThree() {
+      return this.items.length <= 3 && this.currentPage === 1;
+    }
+    },
 
     methods: {
 
         // Validations
-        validate() {
-				this.errors = [];
-				var len = this.name.length;
-				if (len < 5 || len > 20) {
-					this.nameError = true;
-					this.errors.push({
-						'message': 'Name must be between 5 to 20 characters long.'
-					});
-				} else {
-					document.getElementById('name').className = "form-control is-valid";
-					this.errors.push({
-						'message': ''
-					});
-					document.getElementById('feedback-1').className = "valid-feedback";
-				}
-				// email validate
-                var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-				if(this.email.length < 20 || this.email.search(regex) == null) {
-					this.emailError = true;
-					this.errors.push({
-						'message': 'Please provide a valid email address.'
-					});
-				} else {
-					document.getElementById('email').className = "form-control is-valid";
-					this.errors.push({
-						'message': 'Validated.'
-					});
-					document.getElementById('feedback-2').className = "valid-feedback";
-				}
-				// contact validate
-				var regex = /^[0-9 .-]+$/;
-				if(this.contact.length !== 10 || this.contact.match(regex) == null) {
-					this.contactError = true;
-					this.errors.push({
-						'field': 'contact',
-						'message': 'Please provide a valid number'
-					});
-				} else {
-					document.getElementById('contact').className = "form-control is-valid";
-					this.errors.push({
-						'message': 'Validated.'
-					});
-					document.getElementById('feedback-3').className = "valid-feedback";
-				}
-                // Admin name validate
-                var len = this.aname.length;
-				if (len < 5 || len > 20) {
-					this.anameError = true;
-					this.errors.push({
-						'message': 'Name must be between 5 to 20 characters long.'
-					});
-				} else {
-					document.getElementById('aname').className = "form-control is-valid";
-					this.errors.push({
-						'message': ''
-					});
-					document.getElementById('feedback-4').className = "valid-feedback";
-				}
-                // Admin email validate
-                var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-				if(this.aemail.length < 20 || this.aemail.search(regex) == null) {
-					this.aemailError = true;
-					this.errors.push({
-						'message': 'Please provide a valid email address.'
-					});
-				} else {
-					document.getElementById('aemail').className = "form-control is-valid";
-					this.errors.push({
-						'message': 'Validated.'
-					});
-					document.getElementById('feedback-5').className = "valid-feedback";
-				}
-                // Admin contact validate
-				var regex = /^[0-9 .-]+$/;
-				if(this.acontact.length !== 10 || this.acontact.match(regex) == null) {
-					this.acontactError = true;
-					this.errors.push({
-						'field': 'contact',
-						'message': 'Please provide a valid number'
-					});
-				} else {
-					document.getElementById('acontact').className = "form-control is-valid";
-					this.errors.push({
-						'message': 'Validated.'
-					});
-					document.getElementById('feedback-6').className = "valid-feedback";
-				}
-                if (this.errors.length === 0) {
-                    this.formIsValid = true;
-                }
-			},
+       validate() {
+            this.errors = [];
+
+            // name validate
+            this.nameError = this.validateName(this.name);
+            if (this.nameError) {
+                this.errors.push({
+                'message': 'Name must be between 5 to 20 characters long.'
+                });
+            }
+
+            // email validate
+            this.emailError = this.validateEmail(this.email);
+            if (this.emailError) {
+                this.errors.push({
+                'message': 'Please provide a valid email address.'
+                });
+            }
+
+            // contact validate
+            this.contactError = this.validatePhoneNumber(this.contact);
+            if (this.contactError) {
+                this.errors.push({
+                'field': 'contact',
+                'message': 'Please provide a valid number'
+                });
+            }
+
+            // Admin name validate
+            this.anameError = this.validateName(this.aname);
+            if (this.anameError) {
+                this.errors.push({
+                'message': 'Name must be between 5 to 20 characters long.'
+                });
+            }
+
+            // Admin email validate
+            this.aemailError = this.validateEmail(this.aemail);
+            if (this.aemailError) {
+                this.errors.push({
+                'message': 'Please provide a valid email address.'
+                });
+            }
+
+            // Admin contact validate
+            this.acontactError = this.validatePhoneNumber(this.acontact);
+            if (this.acontactError) {
+                this.errors.push({
+                'field': 'contact',
+                'message': 'Please provide a valid number'
+                });
+            }
+
+            //
+            if (!this.status) {
+                this.statusError = true
+                this.errors.push({
+                field: 'status',
+                message: 'Please select a status'
+                })
+            } else {
+                this.statusError = false
+            }
+            },
+            validateName(name) {
+            return name.length < 5 || name.length > 20;
+            },
+            validateEmail(email) {
+            var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            return !regex.test(email);
+            },
+            validatePhoneNumber(contact) {
+            var regex = /^[0-9 .-]+$/;
+            return contact.length !== 10 || !regex.test(contact);
+            },
 
             //clear form
             resetModal() {
@@ -530,8 +544,8 @@ export default {
         },
 
         //Push the data through router
-        viewItem(name) {
-      this.$router.push({ name: 'view', params: { name } });
+        viewItem(name, body) {
+      this.$router.push({ name: 'view', params: { name, body } });
     }
 
     }
@@ -542,6 +556,10 @@ export default {
 <style>
 .dropdown-toggle::after {
   display: none;
+}
+
+.custom-margin {
+  margin-bottom: 170px;
 }
 
 
