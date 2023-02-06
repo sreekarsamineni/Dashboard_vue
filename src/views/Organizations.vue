@@ -269,6 +269,7 @@ const items = [
 ];
 
 import BaseHeader from '../components/BaseHeader.vue'
+import axios from 'axios';
 export default {
   components: { BaseHeader },
 
@@ -288,7 +289,7 @@ export default {
         anameError: false,
         aemailError: false,
         acontactError: false,
-       status: '',
+        status: '',
         statusOptions: [
         { value: 'basic', text: 'Basic' },
         { value: 'corporate', text: 'Corparate' },
@@ -433,6 +434,16 @@ export default {
             if(this.name.length === 0) return;
 
            if( this.validate){
+            axios.post('http://localhost:6010/Post',{
+                OrganizationName: this.name,
+                Email: this.email,
+                ContactNo: this.contact,
+                AdminName: this.aname,
+                AdminEmail: this.aemail,
+                AdminContactNo: this.acontact,
+                MemberType: this.status
+            })
+            .then(response => {
             this.items.push({
                     oname: this.name,
                 });
@@ -455,6 +466,24 @@ export default {
                     icon: true,
                     rtl: false
                 });
+            })
+            .catch(error => {
+                console.error(error);
+                this.$toast.error("Error adding organization.", {
+                    position: "bottom-right",
+                    timeout: 3000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: false,
+                    icon: true,
+                    rtl: false
+                });
+            })
            }
                 // this.name= '',
                 // this.email= '',
@@ -545,8 +574,8 @@ export default {
 
         //Push the data through router
         viewItem(name, body) {
-      this.$router.push({ name: 'view', params: { name, body } });
-    }
+            this.$router.push({ name: 'view', params: { name, body } });
+        }
 
     }
     
