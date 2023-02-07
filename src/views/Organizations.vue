@@ -165,11 +165,11 @@
                                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                                     </template>
                                     <b-dropdown-item-button @click="viewItem(item.oname, item.body)">View</b-dropdown-item-button>
-                                    <div @click="editOrg(item.id)">
+                                    <div @click="editOrg(item)">
                                         <b-dropdown-item-button  v-b-modal.edit-org>Edit</b-dropdown-item-button>
                                     </div>
                                     <div variant="primary" @click="$bvToast.show('example-toast')">
-                                        <b-dropdown-item-button @click="deleteCard(item.id)">Delete</b-dropdown-item-button>
+                                        <b-dropdown-item-button @click="deleteCard(item)">Delete</b-dropdown-item-button>
                                     </div>
                                 </b-dropdown>
                             </b-card-title>
@@ -224,48 +224,6 @@ const items = [
     body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.",
     
   },
-  {
-    id: 3,
-    oname: "Hello",
-    title: "Success",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.",
-    
-  },
-  {
-    id: 4,
-    oname: "Hello",
-    title: "Info",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.",
-    
-  },
-  {
-    id: 5,
-    oname: "Hello",
-    title: "Warning",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.",
-    
-  },
-  {
-    id: 6,
-    oname: "Hello",
-    title: "Danger",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.",
-    
-  },
-  {
-    id: 7,
-    oname: "Hello",
-    title: "Rffff",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.",
-    
-  },
-  {
-    id: 8,
-    oname: "Hello World",
-    title: "Fdddd",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.",
-    
-  }
 ];
 
 import BaseHeader from '../components/BaseHeader.vue'
@@ -432,7 +390,7 @@ export default {
 
         },
 
-        //get data from DB
+        //GET data from DB
         fetchData() {
             axios.get('http://localhost:6010/Get')
             .then(response => {
@@ -461,9 +419,6 @@ export default {
                 MemberType: this.status
             })
             .then(response => {
-            // this.items.push({
-            //         oname: this.name,
-            //     });
                 this.paginate(this.perPage, this.currentPage - 1);
                 this.totalRows = this.items.length;
                 this.$refs.modal.hide();
@@ -512,22 +467,22 @@ export default {
         },
 
         //Edit cards
-        updateOrg(){
+        updateOrg() {
+            axios.put(`http://localhost:6010/Update?id=${this.id}`, {
+                OrganizationName: this.name,
+                Email: this.email,
+                ContactNo: this.contact,
+                AdminName: this.aname,
+                AdminEmail: this.aemail,
+                AdminContactNo: this.acontact,
+                MemberType: this.status
+            })
+            .then(response => {
+                this.paginate(this.perPage, this.currentPage - 1);
+                this.totalRows = this.items.length;
+                this.$refs.modal.hide();
 
-            if(this.name.length === 0) return;
-
-           if( this.validate){
-            if(this.editedCard === null){
-            this.items.push({
-                    oname: this.name,
-                });
-                
-            }
-            else{
-                this.items[this.editedCard].oname = this.name
-                this.editedTask = null;
-                
-                //Alerts
+                // Alerts
                 this.$toast.success("Updated Successfully!", {
                     position: "bottom-right",
                     timeout: 3000,
@@ -542,43 +497,74 @@ export default {
                     icon: true,
                     rtl: false
                 });
-
-            }
-            this.paginate(this.perPage, this.currentPage - 1);
-            this.totalRows = this.items.length;
-            this.$refs.modal.hide();
-           }
-            
+            })
+            .catch(error => {
+                console.error(error);
+                this.$toast.error("Error updating organization.", {
+                    position: "bottom-right",
+                    timeout: 3000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: false,
+                    icon: true,
+                    rtl: false
+                });
+            });
         },
 
         //pre-populate the data
-        editOrg(id){
-            const index = this.items.findIndex(item => item.id === id);
-            this.name = this.items[index].OrganizationName
-            this.email = this.items[index].Email
-            this.contact = this.items[index].ContactNo
-            this.aname = this.items[index].AdminName
-            this.aemail = this.items[index].AdminEmail
-            this.acontact = this.items[index].AdminContactNo
-            this.status = this.items[index].MemberType
-            this.editedCard = index;
-
+        editOrg(item){
+            this.id = item._id;
+            this.name = item.OrganizationName;
+            this.email = item.Email;
+            this.contact = item.ContactNo;
+            this.aname = item.AdminName;
+            this.aemail = item.AdminEmail;
+            this.acontact = item.AdminContactNo;
+            this.status = item.MemberType;
+  
         },
 
+        //to fetch the data from the database based on the id.
+        // editOrg(item){
+        //     axios.get(`http://localhost:6010/Get/${item._id}`)
+        //         .then(response => {
+        //         this.name = response.data.OrganizationName;
+        //         this.email = response.data.Email;
+        //         this.contact = response.data.ContactNo;
+        //         this.aname = response.data.AdminName;
+        //         this.aemail = response.data.AdminEmail;
+        //         this.acontact = response.data.AdminContactNo;
+        //         this.status = response.data.MemberType;
+        //         })
+        //         .catch(error => {
+        //         console.error(error);
+        //         this.$toast.error("Error fetching organization data.", {
+        //             position: "bottom-right",
+        //             timeout: 3000,
+        //             closeOnClick: true,
+        //             pauseOnFocusLoss: true,
+        //             pauseOnHover: true,
+        //             draggable: true,
+        //             draggablePercent: 0.6,
+        //             showCloseButtonOnHover: false,
+        //             hideProgressBar: false,
+        //             closeButton: false,
+        //             icon: true,
+        //             rtl: false
+        //         });
+        //         });
+        // },
+
         //delete cards
-        deleteCard(id){
-            // this.items = this.items.filter(item => item.id !== id)
-            const index = this.items.findIndex(item => item.id === id)
-            this.items.splice(index, 1);
-            this.paginate(this.perPage, this.currentPage - 1);
-            this.totalRows = this.items.length;
-
-            if (this.currentPage > 1 && this.paginatedItems.length === 0) {
-                this.currentPage -= 1;
-            }
-            this.paginate(this.perPage, this.currentPage - 1);
-
-            //Alerts
+        deleteCard(item){
+              axios.delete(`http://localhost:6010/Delete?id=${item._id}`)
+              //Alerts
             this.$toast.success("Deleted Successfully!", {
                     position: "bottom-right",
                     timeout: 3000,
@@ -593,7 +579,37 @@ export default {
                     icon: true,
                     rtl: false
                 });
+
         },
+
+
+        // deleteCard(item){
+        //     const index = this.items.findIndex(item => item.id === id)
+        //     this.items.splice(index, 1);
+        //     this.paginate(this.perPage, this.currentPage - 1);
+        //     this.totalRows = this.items.length;
+
+        //     if (this.currentPage > 1 && this.paginatedItems.length === 0) {
+        //         this.currentPage -= 1;
+        //     }
+        //     this.paginate(this.perPage, this.currentPage - 1);
+
+        //     //Alerts
+        //     this.$toast.success("Deleted Successfully!", {
+        //             position: "bottom-right",
+        //             timeout: 3000,
+        //             closeOnClick: true,
+        //             pauseOnFocusLoss: true,
+        //             pauseOnHover: true,
+        //             draggable: true,
+        //             draggablePercent: 0.6,
+        //             showCloseButtonOnHover: false,
+        //             hideProgressBar: false,
+        //             closeButton: false,
+        //             icon: true,
+        //             rtl: false
+        //         });
+        // },
 
         //Push the data through router
         viewItem(name, body) {
