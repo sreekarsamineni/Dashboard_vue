@@ -158,7 +158,7 @@
                             class=" mt-4"
                             >
                             <b-card-title align='left' style="color:#7C8DA0" class="text-uppercase d-flex justify-content-between mt-1">
-                                {{item.oname}}
+                                {{item.OrganizationName}}
                                 <!-- Dropdown option -->
                                 <b-dropdown  variant="link" toggle-class="text-decoration-none" no-caret class="mt--3">
                                     <template #button-content>
@@ -173,8 +173,8 @@
                                     </div>
                                 </b-dropdown>
                             </b-card-title>
-                                <h3 class="card-text text-dark fw-bold">{{item.title}}</h3>
-                                <small class="card-text" >{{item.body}}</small>
+                                <h3 class="card-text text-dark fw-bold">{{"Primary"}}</h3>
+                                <small class="card-text" >{{"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint."}}</small>
                                 <footer class="mt-4">
                                     <small><cite title="Source Title" class="text-success">4.56%</cite> Since last month </small>
                                 </footer>
@@ -316,7 +316,11 @@ export default {
     computed: {
         cardLengthIsThree() {
       return this.items.length <= 3 && this.currentPage === 1;
-    }
+    },
+    },
+
+    created() {
+        this.fetchData();
     },
 
     methods: {
@@ -428,6 +432,19 @@ export default {
 
         },
 
+        //get data from DB
+        fetchData() {
+            axios.get('http://localhost:6010/Get')
+            .then(response => {
+                this.items = response.data;
+                this.paginate(this.perPage, this.currentPage - 1);
+                this.totalRows = this.items.length;
+            })
+            .catch(error => {
+                console.error(error);
+            })
+        },
+
         //add cards
         addOrg(){
             
@@ -444,9 +461,9 @@ export default {
                 MemberType: this.status
             })
             .then(response => {
-            this.items.push({
-                    oname: this.name,
-                });
+            // this.items.push({
+            //         oname: this.name,
+            //     });
                 this.paginate(this.perPage, this.currentPage - 1);
                 this.totalRows = this.items.length;
                 this.$refs.modal.hide();
@@ -537,7 +554,13 @@ export default {
         //pre-populate the data
         editOrg(id){
             const index = this.items.findIndex(item => item.id === id);
-            this.name = this.items[index].oname
+            this.name = this.items[index].OrganizationName
+            this.email = this.items[index].Email
+            this.contact = this.items[index].ContactNo
+            this.aname = this.items[index].AdminName
+            this.aemail = this.items[index].AdminEmail
+            this.acontact = this.items[index].AdminContactNo
+            this.status = this.items[index].MemberType
             this.editedCard = index;
 
         },
