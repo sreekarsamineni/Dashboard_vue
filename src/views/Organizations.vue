@@ -394,7 +394,7 @@ export default {
         fetchData() {
             axios.get('http://localhost:6010/Get')
             .then(response => {
-                this.items = response.data;
+                this.items = response.data.filter(item => item.OrgActive === true);
                 this.paginate(this.perPage, this.currentPage - 1);
                 this.totalRows = this.items.length;
             })
@@ -406,7 +406,8 @@ export default {
         //add cards
         addOrg(){
             
-            if(this.name.length === 0) return;
+            this.validate;
+            if(this.errors.length > 0) return;
 
            if( this.validate){
             axios.post('http://localhost:6010/Post',{
