@@ -158,7 +158,7 @@
                             class=" mt-4"
                             >
                             <b-card-title align='left' style="color:#7C8DA0" class="text-uppercase d-flex justify-content-between mt-1">
-                                {{item.OrganizationName}}
+                                {{item.orgName}}
                                 <!-- Dropdown option -->
                                 <b-dropdown  variant="link" toggle-class="text-decoration-none" no-caret class="mt--3">
                                     <template #button-content>
@@ -249,10 +249,10 @@ export default {
         acontactError: false,
         status: '',
         statusOptions: [
-        { value: 'basic', text: 'Basic' },
-        { value: 'corporate', text: 'Corparate' },
-        { value: 'partner', text: 'Partner' },
-        { value: 'sponsor', text: 'Sponsor' }
+        { value: 'Basic', text: 'Basic' },
+        { value: 'Corporate', text: 'Corparate' },
+        { value: 'Partner', text: 'Partner' },
+        { value: 'Sponsor', text: 'Sponsor' }
         ],
         statusError: false,
         errors: [],
@@ -392,9 +392,9 @@ export default {
 
         //GET data from DB
         fetchData() {
-            axios.get('http://localhost:6010/Get')
+            axios.get('http://localhost:6010/get')
             .then(response => {
-                this.items = response.data.filter(item => item.OrgActive === true);
+                this.items = response.data.filter(item => item.orgActive === true);
                 this.paginate(this.perPage, this.currentPage - 1);
                 this.totalRows = this.items.length;
             })
@@ -410,14 +410,14 @@ export default {
             if(this.errors.length > 0) return;
 
            if( this.validate){
-            axios.post('http://localhost:6010/Post',{
-                OrganizationName: this.name,
-                Email: this.email,
-                ContactNo: this.contact,
-                AdminName: this.aname,
-                AdminEmail: this.aemail,
-                AdminContactNo: this.acontact,
-                MemberType: this.status
+            axios.post('http://localhost:6010/post',{
+                orgName: this.name,
+                orgEmail: this.email,
+                orgContactNo: this.contact,
+                orgAdminName: this.aname,
+                orgAdminEmail: this.aemail,
+                orgAdminContactNo: this.acontact,
+                memberType: this.status
             })
             .then(response => {
                 this.paginate(this.perPage, this.currentPage - 1);
@@ -469,14 +469,14 @@ export default {
 
         //Edit cards
         updateOrg() {
-            axios.put(`http://localhost:6010/Update?id=${this.id}`, {
-                OrganizationName: this.name,
-                Email: this.email,
-                ContactNo: this.contact,
-                AdminName: this.aname,
-                AdminEmail: this.aemail,
-                AdminContactNo: this.acontact,
-                MemberType: this.status
+            axios.put(`http://localhost:6010/update?id=${this.id}`, {
+                orgName: this.name,
+                orgEmail: this.email,
+                orgContactNo: this.contact,
+                orgAdminName: this.aname,
+                orgAdminEmail: this.aemail,
+                orgAdminContactNo: this.acontact,
+                memberType: this.status
             })
             .then(response => {
                 this.paginate(this.perPage, this.currentPage - 1);
@@ -521,27 +521,27 @@ export default {
         //pre-populate the data
         editOrg(item){
             this.id = item._id;
-            this.name = item.OrganizationName;
-            this.email = item.Email;
-            this.contact = item.ContactNo;
-            this.aname = item.AdminName;
-            this.aemail = item.AdminEmail;
-            this.acontact = item.AdminContactNo;
-            this.status = item.MemberType;
+            this.name = item.orgName;
+            this.email = item.orgEmail;
+            this.contact = item.orgContactNo;
+            this.aname = item.orgAdminName;
+            this.aemail = item.orgAdminEmail;
+            this.acontact = item.orgAdminContactNo;
+            this.status = item.memberType;
   
         },
 
         //to fetch the data from the database based on the id.
         // editOrg(item){
-        //     axios.get(`http://localhost:6010/Get/${item._id}`)
+        //     axios.get(`http://localhost:6010/get/${item._id}`)
         //         .then(response => {
-        //         this.name = response.data.OrganizationName;
-        //         this.email = response.data.Email;
-        //         this.contact = response.data.ContactNo;
-        //         this.aname = response.data.AdminName;
-        //         this.aemail = response.data.AdminEmail;
-        //         this.acontact = response.data.AdminContactNo;
-        //         this.status = response.data.MemberType;
+        //         this.name = response.data.orgName;
+        //         this.email = response.data.orgEmail;
+        //         this.contact = response.data.orgContactNo;
+        //         this.aname = response.data.orgAdminName;
+        //         this.aemail = response.data.orgAdminEmail;
+        //         this.acontact = response.data.orgAdminContactNo;
+        //         this.status = response.data.memberType;
         //         })
         //         .catch(error => {
         //         console.error(error);
@@ -564,7 +564,7 @@ export default {
 
         //delete cards
         deleteCard(item){
-              axios.delete(`http://localhost:6010/Delete?id=${item._id}`)
+              axios.delete(`http://localhost:6010/delete?id=${item._id}`)
               //Alerts
             this.$toast.success("Deleted Successfully!", {
                     position: "bottom-right",
