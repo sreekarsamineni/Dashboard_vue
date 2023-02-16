@@ -1,6 +1,6 @@
 <template>
     <div>
-        <base-header class=" pb-6 pt-5 pt-md-2 bg-gradient-success"></base-header>
+        <base-header class=" pb-6 pt-5 pt-md-3 bg-gradient-success"></base-header>
 
         <b-container>
             <div class="text-right">
@@ -56,15 +56,14 @@
                                 {{ errors[5].message }}
                             </div>
                         </div>
+                        
                         <div class="form-group">
-                            <b-select class="form-control" v-bind:class="{ 'is-invalid': statusError }" id="status" v-model="status">
-                                <option value="" selected>Select status</option>
-                            <option v-for="(item, index) in statusOptions" :value="item.value" :key="index">{{ item.text }}</option>
-                            </b-select>
+                            <multiselect v-bind:class="{ 'is-invalid': statusError }" id="status" :multiple="true" v-model="status" :options="statusOptions"></multiselect>
                             <div class="invalid-feedback" v-if="errors[6]">
-                            {{ errors[6].message }}
+                                {{ errors[6].message }}
                             </div>
                         </div>
+
                         <!-- <button class="btn btn-primary" type="submit">Validate</button> -->
                     </form>
                     <template v-slot:modal-footer="{}">
@@ -72,7 +71,7 @@
                             <button class="btn btn-primary" @click="resetModal">Close</button>
                         </div>
                         <div @click="addOrg">
-                            <button class="btn btn-primary" type="submit" @click="validate">Add Oranization</button>
+                            <button class="btn btn-primary" type="submit" @click="validate">Add Organization</button>
                         </div>
                     </template>
                     
@@ -127,15 +126,14 @@
                                 {{ errors[5].message }}
                             </div>
                         </div>
+                    
                         <div class="form-group">
-                            <b-select class="form-control" v-bind:class="{ 'is-invalid': statusError }" id="status" v-model="status">
-                                <option value="" selected>Select status</option>
-                            <option v-for="(item, index) in statusOptions" :value="item.value" :key="index">{{ item.text }}</option>
-                            </b-select>
+                        <multiselect
+                        v-bind:class="{ 'is-invalid': statusError }" id="status" :multiple="true" v-model="status" :options="statusOptions"></multiselect>
                             <div class="invalid-feedback" v-if="errors[6]">
-                            {{ errors[6].message }}
+                                {{ errors[6].message }}
                             </div>
-                        </div>
+                        </div>    
                         <!-- <button class="btn btn-primary" type="submit">Validate</button> -->
                     </form>
                     <template v-slot:modal-footer="{}">
@@ -155,7 +153,7 @@
                     <b-row>
                         <b-col cols="12" sm="4" class="my-1" :key="index" v-for="(item, index) in paginatedItems">
                             <b-card
-                            class=" mt-4"
+                            class=" mt-4" 
                             >
                             <b-card-title align='left' style="color:#7C8DA0" class="text-uppercase d-flex justify-content-between mt-1">
                                 {{item.orgName}}
@@ -174,8 +172,17 @@
                                 </b-dropdown>
                             </b-card-title>
                                 <h3 class="card-text text-dark fw-bold">{{"Primary"}}</h3>
-                                <small class="card-text" >{{"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint."}}</small>
-                                <footer class="mt-4">
+                                <h5 class="card-text text-dark fw-bold">Member Type:</h5>
+                                <div class="lts">
+                                <small class="card-text" >
+                                    <!-- {{item.memberType && item.memberType.join(',')}} -->
+                                    <ul>
+                                        <li v-for="type in item.memberType" :key="type">{{ type }}</li>
+
+                                    </ul>
+                                </small>
+                            </div>
+                                <footer class="mb-2"  style="position: absolute; bottom: 0;">
                                     <small><cite title="Source Title" class="text-success">4.56%</cite> Since last month </small>
                                 </footer>
                             </b-card>
@@ -227,9 +234,11 @@ const items = [
 ];
 
 import BaseHeader from '../components/BaseHeader.vue'
+import Multiselect from 'vue-multiselect'
+import "vue-multiselect/dist/vue-multiselect.min.css"
 import axios from 'axios';
 export default {
-  components: { BaseHeader },
+  components: { BaseHeader, Multiselect },
 
   data() {
       return {
@@ -247,13 +256,14 @@ export default {
         anameError: false,
         aemailError: false,
         acontactError: false,
-        status: '',
-        statusOptions: [
-        { value: 'Basic', text: 'Basic' },
-        { value: 'Corporate', text: 'Corparate' },
-        { value: 'Partner', text: 'Partner' },
-        { value: 'Sponsor', text: 'Sponsor' }
-        ],
+        status: [],
+        // statusOptions: [
+        // { value: 'Basic', text: 'Basic' },
+        // { value: 'Corporate', text: 'Corparate' },
+        // { value: 'Partner', text: 'Partner' },
+        // { value: 'Sponsor', text: 'Sponsor' }
+        // ],
+        statusOptions: ['Basic', 'Corporate', 'Partner', 'Sponsor'],
         statusError: false,
         errors: [],
 
@@ -291,6 +301,7 @@ export default {
             this.nameError = this.validateName(this.name);
             if (this.nameError) {
                 this.errors.push({
+                'field': 'name',
                 'message': 'Name must be between 5 to 20 characters long.'
                 });
             }
@@ -298,9 +309,11 @@ export default {
             // email validate
             this.emailError = this.validateEmail(this.email);
             if (this.emailError) {
+                this.emailError = true;
                 this.errors.push({
+                'field': 'email',
                 'message': 'Please provide a valid email address.'
-                });
+                }); 
             }
 
             // contact validate
@@ -316,6 +329,7 @@ export default {
             this.anameError = this.validateName(this.aname);
             if (this.anameError) {
                 this.errors.push({
+                'field': 'aname',
                 'message': 'Name must be between 5 to 20 characters long.'
                 });
             }
@@ -324,6 +338,7 @@ export default {
             this.aemailError = this.validateEmail(this.aemail);
             if (this.aemailError) {
                 this.errors.push({
+                'field': 'aemail',
                 'message': 'Please provide a valid email address.'
                 });
             }
@@ -332,17 +347,17 @@ export default {
             this.acontactError = this.validatePhoneNumber(this.acontact);
             if (this.acontactError) {
                 this.errors.push({
-                'field': 'contact',
+                'field': 'acontact',
                 'message': 'Please provide a valid number'
                 });
             }
 
             //
-            if (!this.status) {
+            if (!this.status.length) {
                 this.statusError = true
                 this.errors.push({
-                field: 'status',
-                message: 'Please select a status'
+                'field': 'status',
+                'message': 'Please select a status'
                 })
             } else {
                 this.statusError = false
@@ -359,6 +374,7 @@ export default {
             var regex = /^[0-9 .-]+$/;
             return contact.length !== 10 || !regex.test(contact);
             },
+            
 
             //clear form
             resetModal() {
@@ -368,12 +384,14 @@ export default {
                 this.aname = '';
                 this.aemail = '';
                 this.acontact = '';
+                this.status = [];
                 this.nameError= false,
                 this.emailError= false,
                 this.contactError= false,
                 this.anameError= false,
                 this.aemailError= false,
                 this.acontactError= false,
+                this.statusError= false,
                 this.errors = [];
             },
 
@@ -406,7 +424,7 @@ export default {
         //add cards
         addOrg(){
             
-            this.validate;
+            this.validate();
             if(this.errors.length > 0) return;
 
            if( this.validate){
@@ -420,6 +438,24 @@ export default {
                 memberType: this.status
             })
             .then(response => {
+
+                if(response.data.message === 'User with this email already exists') {
+                    this.$toast.error("User with this email already exists", {
+                        position: "bottom-right",
+                        timeout: 3000,
+                        closeOnClick: true,
+                        pauseOnFocusLoss: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        draggablePercent: 0.6,
+                        showCloseButtonOnHover: false,
+                        hideProgressBar: false,
+                        closeButton: false,
+                        icon: true,
+                        rtl: false
+                    });
+                } else {
+
                 this.paginate(this.perPage, this.currentPage - 1);
                 this.totalRows = this.items.length;
                 this.$refs.modal.hide();
@@ -439,6 +475,7 @@ export default {
                     icon: true,
                     rtl: false
                 });
+              }
             })
             .catch(error => {
                 console.error(error);
@@ -469,6 +506,9 @@ export default {
 
         //Edit cards
         updateOrg() {
+            this.validate;
+            if(this.errors.length > 0) return;
+            if( this.validate){
             axios.put(`http://localhost:6010/update?id=${this.id}`, {
                 orgName: this.name,
                 orgEmail: this.email,
@@ -516,6 +556,7 @@ export default {
                     rtl: false
                 });
             });
+        }
         },
 
         //pre-populate the data
@@ -629,6 +670,10 @@ export default {
 
 .custom-margin {
   margin-bottom: 170px;
+}
+
+.card {
+  height: 254px;
 }
 
 
