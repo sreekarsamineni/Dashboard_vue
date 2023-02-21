@@ -257,12 +257,6 @@ export default {
         aemailError: false,
         acontactError: false,
         status: [],
-        // statusOptions: [
-        // { value: 'Basic', text: 'Basic' },
-        // { value: 'Corporate', text: 'Corparate' },
-        // { value: 'Partner', text: 'Partner' },
-        // { value: 'Sponsor', text: 'Sponsor' }
-        // ],
         statusOptions: ['Basic', 'Corporate', 'Partner', 'Sponsor'],
         statusError: false,
         errors: [],
